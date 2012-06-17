@@ -4,7 +4,7 @@ function prependPath --description "Prepend values to path variable"
 
     # add args from given array
     for addVar in $argv[(seq 2 (count $argv))]
-        test -d "$addVar"; or break;
+        test -d "$addVar"; or continue;
         set -l tmp 1
         for path in $$argv[1]
             if test "$path" = "$addVar"
