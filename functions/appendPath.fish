@@ -3,6 +3,7 @@ function appendPath --description "Append values to path variable"
     not set -q $argv[1]; and set -gx $argv[1]
 
     for addVar in $argv[(seq 2 (count $argv))]
+        test -d "$addVar"; or break;
         set -l tmp 1
         for path in $$argv[1]
             if test "$path" = "$addVar"
