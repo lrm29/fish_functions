@@ -71,7 +71,7 @@ switch "$ParaView_VERSION"
 end
 
 set -l paraviewInstDir $WM_THIRD_PARTY_DIR/ParaView-$ParaView_VERSION
-set -x ParaView_DIR /opt/paraviewopenfoam3120
+set -x ParaView_DIR $WM_THIRD_PARTY_DIR/platforms/$WM_ARCH$WM_COMPILER/paraview-$ParaView_VERSION
 
 if test -r $ParaView_DIR; or test -r $paraviewInstDir
     prependPath PATH $ParaView_DIR/bin
@@ -87,5 +87,6 @@ if test -r $ParaView_DIR; or test -r $paraviewInstDir
 else
     set -e PV_PLUGIN_PATH
 end
+
 
 # -----------------------------------------------------------------------------
