@@ -42,7 +42,7 @@ set -x WM_PROJECT_VERSION   2.1.x
 # Location of the OpenFOAM installation
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 set -l foamInstall ~/$WM_PROJECT
-# foamInstall=~$WM_PROJECT
+# foamInstall=~/$WM_PROJECT
 # foamInstall=/opt/$WM_PROJECT
 # foamInstall=/usr/local/$WM_PROJECT
 #
