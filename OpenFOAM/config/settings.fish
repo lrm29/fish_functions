@@ -149,9 +149,16 @@ test -d "$WM_DIR"; and set -l PATH $WM_DIR $PATH
 # add OpenFOAM scripts to the path
 prependPath PATH $WM_PROJECT_DIR/bin
 
-prependPath PATH $FOAM_USER_APPBIN $FOAM_SITE_APPBIN $FOAM_APPBIN
+prependPath PATH $FOAM_USER_APPBIN
+prependPath PATH $FOAM_SITE_APPBIN
+prependPath PATH $FOAM_APPBIN
+
 # Make sure to pick up dummy versions of external libraries last
-prependPath LD_LIBRARY_PATH $FOAM_USER_LIBBIN $FOAM_SITE_LIBBIN $FOAM_LIBBIN $FOAM_EXT_LIBBIN $FOAM_LIBBIN/dummy
+prependPath LD_LIBRARY_PATH $FOAM_USER_LIBBIN
+prependPath LD_LIBRARY_PATH $FOAM_SITE_LIBBIN
+prependPath LD_LIBRARY_PATH $FOAM_LIBBIN
+prependPath LD_LIBRARY_PATH $FOAM_EXT_LIBBIN
+prependPath LD_LIBRARY_PATH $FOAM_LIBBIN/dummy
 
 # Compiler settings
 # ~~~~~~~~~~~~~~~~~
@@ -271,7 +278,6 @@ switch $foamCompiler
             prependPath PATH $clangDir/bin
         end
         set -e clang_version
-        set -e clangDir
     case system
         # okay, use system compiler
     case '*'
@@ -295,7 +301,7 @@ end
 # ~~~~~~~~~~~~~~
 
 set -l boost_version boost_1_45_0
-set -l cgal_version CGAL-3.8
+set -l cgal_version CGAL-3.9
 
 set -x BOOST_ARCH_PATH $WM_THIRD_PARTY_DIR/platforms/$WM_ARCH$WM_COMPILER/$boost_version
 set -x CGAL_ARCH_PATH $WM_THIRD_PARTY_DIR/platforms/$WM_ARCH$WM_COMPILER/$cgal_version
@@ -320,9 +326,6 @@ else
     set -e MPFR_ARCH_PATH
     set -e GMP_ARCH_PATH
 end
-
-set -e boost_version
-set -e cgal_version
 
 
 # Communications library

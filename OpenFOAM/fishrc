@@ -31,7 +31,7 @@
 #------------------------------------------------------------------------------
 
 set -x WM_PROJECT           OpenFOAM
-set -x WM_PROJECT_VERSION   2.1.0
+set -x WM_PROJECT_VERSION   2.1.x
 
 ################################################################################
 # USER EDITABLE PART: Changes made here may be lost with the next upgrade
@@ -41,7 +41,7 @@ set -x WM_PROJECT_VERSION   2.1.0
 #
 # Location of the OpenFOAM installation
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-set -l foamInstall /opt
+set -l foamInstall ~/$WM_PROJECT
 # foamInstall=~$WM_PROJECT
 # foamInstall=/opt/$WM_PROJECT
 # foamInstall=/usr/local/$WM_PROJECT
@@ -112,7 +112,7 @@ test "$WM_PROJECT_INST_DIR" != "$FOAM_INST_DIR";
 # Location of installation
 # ~~~~~~~~~~~~~~~~~~~~~~~~
 set -x WM_PROJECT_INST_DIR $FOAM_INST_DIR
-set -x WM_PROJECT_DIR $WM_PROJECT_INST_DIR/openfoam210
+set -x WM_PROJECT_DIR $WM_PROJECT_INST_DIR/$WM_PROJECT-$WM_PROJECT_VERSION
 
 # Location of third-party software
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -129,11 +129,18 @@ test -d "$WM_PROJECT_SITE";
 # ~~~~~~~~~~~~~~~~~~~~~~
 set -x WM_PROJECT_USER_DIR $HOME/$WM_PROJECT/$USER-$WM_PROJECT_VERSION
 
+function _foamParseOption
+    eval (echo $argv | sed 's/\(.*\)=\(.*\)/set -gx \1 \2/g')
+end
+
 # Evaluate command-line parameters
 function _foamEval
-    for i in $argv[(seq 2 (count $argv))]
+    for i in $argv[(seq 1 (count $argv))]
         switch $i
-            case -*
+            case '*fishrc'
+                # Bug in fishrc
+                continue
+            case '-*'
                 # stray option (not meant for us here) -> get out
                 break
             case '*='
@@ -147,7 +154,7 @@ function _foamEval
                 if set -q FOAM_VERBOSE; and set -q PS1
                     echo "Exporting $i"
                 end
-                eval (echo $i | sed 's/\(.*\)=\(.*\)/set -gx \1 \2/g')
+                _foamParseOption $i
             case '*'
                 # filename: source it
                 if test -f "$i"
@@ -157,11 +164,9 @@ function _foamEval
     end
 end
 
-
 # Add in preset user or site preferences:
-if test -e prefs.sh
-    . (sh $WM_PROJECT_DIR/bin/foamEtcFile prefs.fish)
-end
+set -l prefsFile (sh $WM_PROJECT_DIR/bin/foamEtcFile prefs.fish)
+test -e "$prefsFile"; and . $prefsFile
 
 # Evaluate command-line parameters and record settings for later
 # these can be used to set/unset values, or specify alternative pref files
