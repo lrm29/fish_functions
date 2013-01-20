@@ -1,5 +1,5 @@
 ---
-layout: posts
+layout: default
 title: RADAU ODE Solver for OpenFOAM
 ---
 
