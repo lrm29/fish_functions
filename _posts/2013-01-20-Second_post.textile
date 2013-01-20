@@ -1,0 +1,21 @@
+---
+layout: posts
+title: RADAU ODE Solver for OpenFOAM
+---
+
+Here's a patch for OpenFOAM to add RADAU as an ODE solver. Simply apply the patch to create a folder within /src/ODE/ODESolver called RADAU, then remake the folder ODE using `wmake libso'.
+
+You can test RADAU using /applications/test/ODETest. Here's how it roughly performs to SIBS:
+
+RADAU:
+
+Analytical: y(2.0) = 4(0.223891 0.576725 0.352834 0.128943)
+Numerical:  y(2.0) = 4(0.223891 0.576725 0.352834 0.128943)
+
+SIBS:
+
+Analytical: y(2.0) = 4(0.223891 0.576725 0.352834 0.128943)
+Numerical:  y(2.0) = 4(0.223891 0.576725 0.352833 0.128944)
+
+There's still some work to do to integrate it properly. If there's interest let me know or have a go yourself!
+
