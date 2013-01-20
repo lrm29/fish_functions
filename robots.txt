@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: 
+
+Sitemap: http://lrm29.github.com/fish_functions/sitemap.xml 
