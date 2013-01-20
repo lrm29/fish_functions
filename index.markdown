@@ -3,9 +3,8 @@ title: fish_functions
 layout: default
 ---
 
-# This is a H1
+# Tips and Tricks
 
-[the clickable text](http://xlson.com/)
-
-* Bullet lists are also easy to create
-* One more bullet
+{% for post in site.posts %}
+  <span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ post.url }}">{{ post.title }}</a><br>
+{% endfor %}
