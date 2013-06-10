@@ -1,0 +1,5 @@
+Provides syntax highlighting for gedit. Incomplete!
+
+Put the file here:
+
+.local/share/gtksourceview-3.0/language-specs/fish.lang
