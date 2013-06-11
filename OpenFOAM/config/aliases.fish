@@ -50,7 +50,7 @@ end
 #  - also need to set WM_HOSTS
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function wmSchedON
-    set -x WM_SCHEDULER $WM_PROJECT_DIR/wmake/wmakeScheduler
+    set -gx WM_SCHEDULER $WM_PROJECT_DIR/wmake/wmakeScheduler
 end
 
 function wmSchedOFF
@@ -60,8 +60,8 @@ end
 # Change ParaView version
 # ~~~~~~~~~~~~~~~~~~~~~~~
 function foamPV
-    . `$WM_PROJECT_DIR/etc/config/paraview.fish` ParaView_VERSION=\!*;
-    echo paraview-$ParaView_VERSION
+    . $WM_PROJECT_DIR/etc/config/paraview.fish ParaView_VERSION=$argv[1]
+    echo "paraview-$ParaView_VERSION  (major: $ParaView_MAJOR)"
 end
 
 # Change directory aliases
@@ -88,5 +88,7 @@ if set -q WM_PROJECT_SITE
 else
     function foamSite; cd $WM_PROJECT_INST_DIR/site; end;
 end
+
+function buildCvMesh; eval $FOAM_APP/utilities/mesh/generation/Allwmake; end;
 
 # -----------------------------------------------------------------------------

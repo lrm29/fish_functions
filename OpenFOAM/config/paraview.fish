@@ -34,29 +34,28 @@
 #------------------------------------------------------------------------------
 
 # clean the PATH
-removeFromPath PATH $WM_THIRD_PARTY_DIR/platforms/$WM_ARCH$WM_COMPILER/cmake-*
-removeFromPath PATH $WM_THIRD_PARTY_DIR/platforms/$WM_ARCH$WM_COMPILER/paraview-*
+foamClean PATH $WM_THIRD_PARTY_DIR/platforms/$WM_ARCH$WM_COMPILER/cmake-*
+foamClean PATH $WM_THIRD_PARTY_DIR/platforms/$WM_ARCH$WM_COMPILER/paraview-*
 
 # determine the cmake to be used
 set -e CMAKE_HOME
 set -l cmakeVersions cmake-2.8.4 cmake-2.8.3 cmake-2.8.1
 
+
 for cmakeVersion in $cmakeVersions
     set -l cmake $WM_THIRD_PARTY_DIR/platforms/$WM_ARCH$WM_COMPILER/$cmakeVersion
 
     if test -r $cmake
-        set -x CMAKE_HOME $cmake
-        prependPath PATH $CMAKE_HOME/bin
+        set -gx CMAKE_HOME $cmake
+        prependToVar PATH $CMAKE_HOME/bin
         break
     end
 end
 
 
 #- ParaView version, automatically determine major version
-set -x ParaView_VERSION 3.10.1
-set -x ParaView_MAJOR detect
-
-
+set -gx ParaView_VERSION 3.12.0
+set -gx ParaView_MAJOR detect
 # Evaluate command-line parameters for ParaView
 for i in $argv
     switch $i
@@ -66,27 +65,47 @@ for i in $argv
 end
 
 switch "$ParaView_VERSION"
-    case (echo $ParaView_VERSION | grep -e "[0-9]*")
-        set -x ParaView_MAJOR (echo $ParaView_VERSION | sed -e 's/^\([0-9][0-9]*\.[0-9][0-9]*\).*$/\1/')
+    case (echo $ParaView_VERSION | command grep -e "[0-9]*")
+        set -gx ParaView_MAJOR (echo $ParaView_VERSION | sed -e 's/^\([0-9][0-9]*\.[0-9][0-9]*\).*$/\1/')
 end
 
 set -l paraviewInstDir $WM_THIRD_PARTY_DIR/ParaView-$ParaView_VERSION
-set -x ParaView_DIR $WM_THIRD_PARTY_DIR/platforms/$WM_ARCH$WM_COMPILER/paraview-$ParaView_VERSION
+set -gx ParaView_DIR $WM_THIRD_PARTY_DIR/platforms/$WM_ARCH$WM_COMPILER/ParaView-$ParaView_VERSION
 
-if test -r $ParaView_DIR; or test -r $paraviewInstDir
-    prependPath PATH $ParaView_DIR/bin
-    prependPath LD_LIBRARY_PATH $ParaView_DIR/lib/paraview-$ParaView_MAJOR $LD_LIBRARY_PATH
-    set -x PV_PLUGIN_PATH $FOAM_LIBBIN/paraview-$ParaView_MAJOR
+if begin; test -r $ParaView_DIR; or test -r $paraviewInstDir; end
+
+    foamPrintDebug "    ParaView_DIR         : $ParaView_DIR"
+    foamPrintDebug "    ParaView_MAJOR         : $ParaView_MAJOR"
+    foamPrintDebug "    ParaView_VERSION         : $ParaView_VERSION"
+
+    set -gx ParaView_INCLUDE_DIR $ParaView_DIR/include/paraview-$ParaView_MAJOR
+    if not test -d $ParaView_INCLUDE_DIR; and test -d $ParaView_DIR/include/paraview
+        set -gx ParaView_INCLUDE_DIR $ParaView_DIR/include/paraview
+    end
+
+    set -l ParaView_LIB_DIR $ParaView_DIR/lib/paraview-$ParaView_MAJOR
+    if not test -d $ParaView_LIB_DIR; and test -d $ParaView_DIR/include/paraview
+        set ParaView_LIB_DIR $ParaView_DIR/lib/paraview
+    end
+
+    prependToVar PATH $ParaView_DIR/bin
+    prependToVar LD_LIBRARY_PATH $ParaView_LIB_DIR
+    set -gx PV_PLUGIN_PATH $FOAM_LIBBIN/paraview-$ParaView_MAJOR
+
+    foamPrintDebug "Using paraview"
+    foamPrintDebug "    ParaView_DIR         : $ParaView_DIR"
+    foamPrintDebug "    ParaView_LIB_DIR     : $ParaView_LIB_DIR"
+    foamPrintDebug "    ParaView_INCLUDE_DIR : $ParaView_INCLUDE_DIR"
+    foamPrintDebug "    PV_PLUGIN_PATH       : $PV_PLUGIN_PATH"
 
     # add in python libraries if required
     set -l paraviewPython $ParaView_DIR/Utilities/VTKPythonWrapping
 
-    if test -r $paraviewPython
-        appendPath PYTHONPATH $paraviewPython $ParaView_DIR/lib/paraview-$ParaView_MAJOR
+    if test -r "$paraviewPython"
+        set -gx PYTHONPATH $PYTHONPATH $paraviewPython $ParaView_DIR/lib/paraview-$ParaView_MAJOR
     end
 else
     set -e PV_PLUGIN_PATH
 end
-
 
 # -----------------------------------------------------------------------------

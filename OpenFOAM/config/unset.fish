@@ -29,16 +29,14 @@
 #
 #------------------------------------------------------------------------------
 
-function foamClean; removeFromPath $argv; cleanPath $argv[1]; end;
-
 # The old dirs to be cleaned from the various environment variables
 # - remove anything under top-level directory.
 # NB: the WM_PROJECT_INST_DIR might not be identical between versions
 #
-set -l foamOldDirs "$WM_PROJECT_INST_DIR" "$WM_PROJECT_SITE"
+set -l foamOldDirs $WM_PROJECT_INST_DIR $WM_PROJECT_SITE
 
-test -n "$WM_PROJECT";
-    and set -l foamOldDirs $foamOldDirs "$HOME/$WM_PROJECT/$USER_SITE"
+test -n $WM_PROJECT;
+    and set -l foamOldDirs $foamOldDirs $HOME/$WM_PROJECT/$USER_SITE
 
 #------------------------------------------------------------------------------
 # unset WM_* environment variables
@@ -120,9 +118,11 @@ foamClean PATH $foamOldDirs
 foamClean LD_LIBRARY_PATH $foamOldDirs
 foamClean MANPATH $foamOldDirs
 
-
+functions -e foamClean
+functions -e foamDebug
+functions -e foamSource
+functions -e prependToVar
 set -e cleaned
-set -e foamClean
 set -e foamOldDirs
 
 #------------------------------------------------------------------------------
@@ -158,6 +158,5 @@ functions -e foamUtils
 functions -e foam3rdParty
 functions -e foamSite
 
-functions -e foamClean
 
 # ----------------------------------------------------------------- end-of-file

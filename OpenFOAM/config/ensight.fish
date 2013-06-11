@@ -32,7 +32,7 @@
 
 # fallback value
 if not set -q CEI_HOME
-    set -x CEI_HOME /usr/local/ensight/CEI
+    set -gx CEI_HOME /usr/local/ensight/CEI
 end
 
 if test -r $CEI_HOME
@@ -40,13 +40,13 @@ then
     # special treatment for 32bit OpenFOAM and 64bit Ensight
     test "$WM_ARCH" = linux;
         and test (uname -m) = x86_64;
-            and set -x CEI_ARCH linux_2.6_32
+        and set -gx CEI_ARCH linux_2.6_32
 
     test "$CEI_HOME/bin/ensight" != "(which ensight)";
-        and prependPath PATH $CEI_HOME/bin
+        and prependToVar PATH $CEI_HOME/bin
 
-    set -x ENSIGHT9_INPUT dummy
-    set -x ENSIGHT9_READER $FOAM_LIBBIN
+    set -gx ENSIGHT9_INPUT dummy
+    set -gx ENSIGHT9_READER $FOAM_LIBBIN
 else
     set -e CEI_HOME
 end
